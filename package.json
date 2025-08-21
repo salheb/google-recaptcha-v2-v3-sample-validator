@@ -1,0 +1,30 @@
+{
+  "name": "recaptcha-v3-generator",
+  "version": "1.0.0",
+  "description": "A simple frontend application for generating and testing Google ReCAPTCHA v3 tokens",
+  "main": "index.html",
+  "scripts": {
+    "start": "python -m http.server 8000",
+    "serve": "python -m http.server 8000",
+    "dev": "python -m http.server 8000"
+  },
+  "keywords": [
+    "recaptcha",
+    "recaptcha-v3",
+    "google-recaptcha",
+    "token-generator",
+    "frontend",
+    "javascript",
+    "html",
+    "css"
+  ],
+  "author": "Julio",
+  "license": "MIT",
+  "homepage": ".",
+  "repository": {
+    "type": "git",
+    "url": "."
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

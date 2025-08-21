@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReCAPTCHA v2 Validator</title>
+    <link rel="stylesheet" href="styles-v2.css">
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🛡️ ReCAPTCHA v2 Validator</h1>
+            <p>Valide usuários usando Google ReCAPTCHA v2 programaticamente</p>
+            <div class="nav-links">
+                <a href="index.html">← ReCAPTCHA v3 Generator</a>
+            </div>
+        </header>
+
+        <main>
+            <div class="card">
+                <h2>Configuração ReCAPTCHA v2</h2>
+                <div class="form-group">
+                    <label for="siteKeyV2">Site Key (v2):</label>
+                    <input type="text" id="siteKeyV2" placeholder="Digite sua chave do site ReCAPTCHA v2" 
+                           value="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI">
+                    <small>Usando chave de teste - substitua pela sua chave real</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="secretKeyV2">Secret Key (apenas para teste):</label>
+                    <input type="text" id="secretKeyV2" placeholder="Digite sua chave secreta (NÃO use em produção)" 
+                           value="6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe">
+                    <small>⚠️ APENAS para demonstração - nunca exponha a secret key no frontend!</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="theme">Tema:</label>
+                    <select id="theme">
+                        <option value="light">Claro</option>
+                        <option value="dark">Escuro</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="size">Tamanho:</label>
+                    <select id="size">
+                        <option value="normal">Normal</option>
+                        <option value="compact">Compacto</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Validação Interativa</h2>
+                <div id="recaptcha-container"></div>
+                <div class="validation-buttons">
+                    <button id="validateBtn" class="btn-primary" disabled>✅ Validação ReCAPTCHA v2 no cliente</button>
+                    <button id="resetBtn" class="btn-secondary">🔄 Reset</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Resposta do ReCAPTCHA</h2>
+                <div class="response-container">
+                    <textarea id="responseOutput" placeholder="A resposta do ReCAPTCHA aparecerá aqui..." readonly></textarea>
+                    <button id="copyResponseBtn" class="btn-secondary" disabled>📋 Copiar Resposta</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Validação do Servidor (Simulação)</h2>
+                <div id="serverValidation" class="server-validation">
+                    <p>Nenhuma validação realizada ainda</p>
+                </div>
+                <button id="simulateValidationBtn" class="btn-primary" disabled>🔍 Simular Validação do Servidor</button>
+            </div>
+
+            <div class="card">
+                <h2>Implementação Programática</h2>
+                <div class="code-examples">
+                    <h3>Frontend - HTML</h3>
+                    <pre><code>&lt;div id="recaptcha-container"&gt;&lt;/div&gt;
+&lt;script&gt;
+  // Renderizar ReCAPTCHA programaticamente
+  var widgetId = grecaptcha.render('recaptcha-container', {
+    'sitekey': 'SUA_SITE_KEY',
+    'theme': 'light',
+    'size': 'normal',
+    'callback': onRecaptchaSuccess,
+    'expired-callback': onRecaptchaExpired
+  });
+&lt;/script&gt;</code></pre>
+
+                    <h3>Frontend - JavaScript</h3>
+                    <pre><code>function onRecaptchaSuccess(token) {
+  console.log('Token ReCAPTCHA:', token);
+  // Enviar token para o servidor
+  validateWithServer(token);
+}
+
+function validateWithServer(token) {
+  fetch('/validate-recaptcha', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token: token })
+  })
+  .then(response => response.json())
+  .then(data => {
+    if (data.success) {
+      console.log('Usuário validado!');
+    } else {
+      console.log('Validação falhou:', data.error);
+    }
+  });
+}</code></pre>
+
+                    <h3>Backend - Node.js</h3>
+                    <pre><code>const express = require('express');
+const axios = require('axios');
+const app = express();
+
+app.post('/validate-recaptcha', async (req, res) => {
+  const { token } = req.body;
+  const secretKey = 'SUA_SECRET_KEY';
+  
+  try {
+    const response = await axios.post(
+      'https://www.google.com/recaptcha/api/siteverify',
+      null,
+      {
+        params: {
+          secret: secretKey,
+          response: token,
+          remoteip: req.ip
+        }
+      }
+    );
+    
+    const { success, score, action } = response.data;
+    
+    if (success) {
+      res.json({ success: true, message: 'Usuário validado!' });
+    } else {
+      res.json({ success: false, error: 'Validação falhou' });
+    }
+  } catch (error) {
+    res.json({ success: false, error: 'Erro no servidor' });
+  }
+});</code></pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>Status e Logs</h2>
+                <div id="logs" class="logs-container">
+                    <p class="log-entry">Sistema iniciado - aguardando interação</p>
+                </div>
+                <button id="clearLogsBtn" class="btn-secondary">🗑️ Limpar Logs</button>
+            </div>
+        </main>
+
+        <footer>
+            <p>ReCAPTCHA v2 Validator - Demonstração para desenvolvimento</p>
+        </footer>
+    </div>
+
+    <script src="script-v2.js"></script>
+</body>
+</html>
